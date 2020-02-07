@@ -18,6 +18,7 @@ namespace SharpRDP
         private string cmd;
         private string execwith;
         private string target;
+        private string language;
         private enum Logonerrors : uint
         {
             ARBITRATION_CODE_BUMP_OPTIONS = 0xFFFFFFFB,
@@ -36,10 +37,10 @@ namespace SharpRDP
             STATUS_PASSWORD_MUST_CHANGE = 0xC0000224
         }
 
-        public void CreateRdpConnection(string server, string user, string domain, string password, string command, string execw)
+        public void CreateRdpConnection(string server, string user, string domain, string password, string command, string execw, string language)
         {
             keycode = new Dictionary<String, Code>();
-            KeyCodes();
+            KeyCodes(language);
             cmd = command;
             target = server;
             execwith = execw;
@@ -209,7 +210,7 @@ namespace SharpRDP
                 Thread.Sleep(10);
             }
         }
-
+        
         private void SendElement(String curchars)
         {
             var current = keycode[curchars];
@@ -217,85 +218,241 @@ namespace SharpRDP
             Thread.Sleep(10);
         }
 
-        private void KeyCodes()
+        private void KeyCodes(String language)
         {
+            // See https://github.com/apache/guacamole-server/tree/master/src/protocols/rdp/keymaps to add more language
+            // Other resource https://handmade.network/forums/t/2011-keyboard_inputs_-_scancodes,_raw_input,_text_input,_key_names
+            // https://wiki.osdev.org/PS/2_Keyboard
+            if (language.ToLower() == "fr")
+            {
+                keycode["Esc"] = new Code(new[] { false, true }, new[] { 0x01 });
+                keycode["Enter+down"] = new Code(new[] { false }, new[] { 0x1c });
+                keycode["Enter+up"] = new Code(new[] { true }, new[] { 0x1c });
+                keycode["Win"] = new Code(new[] { false, true }, new[] { 0x15b });
+                keycode["Down"] = new Code(new[] { false, true }, new[] { 0x150 });
+                keycode["Right"] = new Code(new[] { false, true }, new[] { 0x14d });
+                keycode["Left"] = new Code(new[] { false, true }, new[] { 0x14b });
 
-            keycode["Esc"] = new Code(new[] { false, true }, new[] { 0x01 });
-            keycode["Enter+down"] = new Code(new[] { false }, new[] { 0x1c });
-            keycode["Enter+up"] = new Code(new[] { true }, new[] { 0x1c });
-            keycode["Win"] = new Code(new[] { false, true }, new[] { 0x15b });
-            keycode["Down"] = new Code(new[] { false, true }, new[] { 0x150 });
-            keycode["Right"] = new Code(new[] { false, true }, new[] { 0x14d });
-            keycode["Left"] = new Code(new[] { false, true }, new[] { 0x14b });
+                keycode["Calc"] = new Code(new[] { false, true }, new[] { 0x121, 0x121 });
+                keycode["Paste"] = new Code(new[] { false, true }, new[] { 0x10a, 0x10a });
 
-            keycode["Calc"] = new Code(new[] { false, true }, new[] { 0x121, 0x121 });
-            keycode["Paste"] = new Code(new[] { false, true }, new[] { 0x10a, 0x10a });
+                keycode[" "] = new Code(new[] { false, true }, new[] { 0x39 });
 
-            keycode["1"] = new Code(new[] { false, true }, new[] { 0x02 });
-            keycode["2"] = new Code(new[] { false, true }, new[] { 0x03 });
-            keycode["3"] = new Code(new[] { false, true }, new[] { 0x04 });
-            keycode["4"] = new Code(new[] { false, true }, new[] { 0x05 });
-            keycode["5"] = new Code(new[] { false, true }, new[] { 0x06 });
-            keycode["6"] = new Code(new[] { false, true }, new[] { 0x07 });
-            keycode["7"] = new Code(new[] { false, true }, new[] { 0x08 });
-            keycode["8"] = new Code(new[] { false, true }, new[] { 0x09 });
-            keycode["9"] = new Code(new[] { false, true }, new[] { 0x0a });
-            keycode["0"] = new Code(new[] { false, true }, new[] { 0x0b });
-            keycode["-"] = new Code(new[] { false, true }, new[] { 0x0c });
+                // azertyuiop$
+                keycode["a"] = new Code(new[] { false, true }, new[] { 0x10 });
+                keycode["z"] = new Code(new[] { false, true }, new[] { 0x11 });
+                keycode["e"] = new Code(new[] { false, true }, new[] { 0x12 });
+                keycode["r"] = new Code(new[] { false, true }, new[] { 0x13 });
+                keycode["t"] = new Code(new[] { false, true }, new[] { 0x14 });
+                keycode["y"] = new Code(new[] { false, true }, new[] { 0x15 });
+                keycode["u"] = new Code(new[] { false, true }, new[] { 0x16 });
+                keycode["i"] = new Code(new[] { false, true }, new[] { 0x17 });
+                keycode["o"] = new Code(new[] { false, true }, new[] { 0x18 });
+                keycode["p"] = new Code(new[] { false, true }, new[] { 0x19 });
+                keycode["$"] = new Code(new[] { false, true }, new[] { 0x1b });
 
-            keycode["a"] = new Code(new[] { false, true }, new[] { 0x1e });
-            keycode["b"] = new Code(new[] { false, true }, new[] { 0x30 });
-            keycode["c"] = new Code(new[] { false, true }, new[] { 0x2e });
-            keycode["d"] = new Code(new[] { false, true }, new[] { 0x20 });
-            keycode["e"] = new Code(new[] { false, true }, new[] { 0x12 });
-            keycode["f"] = new Code(new[] { false, true }, new[] { 0x21 });
-            keycode["g"] = new Code(new[] { false, true }, new[] { 0x22 });
-            keycode["h"] = new Code(new[] { false, true }, new[] { 0x23 });
-            keycode["i"] = new Code(new[] { false, true }, new[] { 0x17 });
-            keycode["j"] = new Code(new[] { false, true }, new[] { 0x24 });
-            keycode["k"] = new Code(new[] { false, true }, new[] { 0x25 });
-            keycode["l"] = new Code(new[] { false, true }, new[] { 0x26 });
-            keycode["m"] = new Code(new[] { false, true }, new[] { 0x32 });
-            keycode["n"] = new Code(new[] { false, true }, new[] { 0x31 });
-            keycode["o"] = new Code(new[] { false, true }, new[] { 0x18 });
-            keycode["p"] = new Code(new[] { false, true }, new[] { 0x19 });
-            keycode["q"] = new Code(new[] { false, true }, new[] { 0x10 });
-            keycode["r"] = new Code(new[] { false, true }, new[] { 0x13 });
-            keycode["s"] = new Code(new[] { false, true }, new[] { 0x1f });
-            keycode["t"] = new Code(new[] { false, true }, new[] { 0x14 });
-            keycode["u"] = new Code(new[] { false, true }, new[] { 0x16 });
-            keycode["v"] = new Code(new[] { false, true }, new[] { 0x2f });
-            keycode["w"] = new Code(new[] { false, true }, new[] { 0x11 });
-            keycode["x"] = new Code(new[] { false, true }, new[] { 0x2d });
-            keycode["y"] = new Code(new[] { false, true }, new[] { 0x15 });
-            keycode["z"] = new Code(new[] { false, true }, new[] { 0x2c });
-            keycode[" "] = new Code(new[] { false, true }, new[] { 0x39 });
+                // qsdfghjklmù*
+                keycode["q"] = new Code(new[] { false, true }, new[] { 0x1e });
+                keycode["s"] = new Code(new[] { false, true }, new[] { 0x1f });
+                keycode["d"] = new Code(new[] { false, true }, new[] { 0x20 });
+                keycode["f"] = new Code(new[] { false, true }, new[] { 0x21 });
+                keycode["g"] = new Code(new[] { false, true }, new[] { 0x22 });
+                keycode["h"] = new Code(new[] { false, true }, new[] { 0x23 });
+                keycode["j"] = new Code(new[] { false, true }, new[] { 0x24 });
+                keycode["k"] = new Code(new[] { false, true }, new[] { 0x25 });
+                keycode["l"] = new Code(new[] { false, true }, new[] { 0x26 });
+                keycode["m"] = new Code(new[] { false, true }, new[] { 0x27 });
+                keycode["ù"] = new Code(new[] { false, true }, new[] { 0x28 });
+                keycode["*"] = new Code(new[] { false, true }, new[] { 0x2b });
 
-            keycode[","] = new Code(new[] { false, true }, new[] { 0x33 });
-            keycode["."] = new Code(new[] { false, true }, new[] { 0x34 });
-            keycode["/"] = new Code(new[] { false, true }, new[] { 0x35 });
-            keycode["["] = new Code(new[] { false, true }, new[] { 0x1a });
-            keycode["]"] = new Code(new[] { false, true }, new[] { 0x1b });
-            keycode["\\"] = new Code(new[] { false, true }, new[] { 0x2b });
-            keycode[";"] = new Code(new[] { false, true }, new[] { 0x27 });
-            keycode["'"] = new Code(new[] { false, true }, new[] { 0x28 });
+                // <wxcvbn,;:!
+                keycode["<"] = new Code(new[] { false, true }, new[] { 0x56 });
+                keycode["w"] = new Code(new[] { false, true }, new[] { 0x2c });
+                keycode["x"] = new Code(new[] { false, true }, new[] { 0x2d });
+                keycode["c"] = new Code(new[] { false, true }, new[] { 0x2e });
+                keycode["v"] = new Code(new[] { false, true }, new[] { 0x2f });
+                keycode["b"] = new Code(new[] { false, true }, new[] { 0x30 });          
+                keycode["n"] = new Code(new[] { false, true }, new[] { 0x31 });
+                keycode[","] = new Code(new[] { false, true }, new[] { 0x32 });
+                keycode[";"] = new Code(new[] { false, true }, new[] { 0x33 });
+                keycode[":"] = new Code(new[] { false, true }, new[] { 0x34 });
+                keycode["!"] = new Code(new[] { false, true }, new[] { 0x35 });
 
-            keycode["\""] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x28 });
-            keycode[":"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x27 });
-            keycode["|"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2b });
-            keycode["&"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x08 });
-            keycode["%"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x06 });
-            keycode["("] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0a });
-            keycode[")"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0b });
+                // ²&é"'(-è_çà)=
+                keycode["²"] = new Code(new[] { false, true }, new[] { 0x29 });
+                keycode["&"] = new Code(new[] { false, true }, new[] { 0x02 });
+                keycode["é"] = new Code(new[] { false, true }, new[] { 0x03 });
+                keycode["\""] = new Code(new[] { false, true }, new[] { 0x04 });
+                keycode["'"] = new Code(new[] { false, true }, new[] { 0x05 });
+                keycode["("] = new Code(new[] { false, true }, new[] { 0x06 });
+                keycode["-"] = new Code(new[] { false, true }, new[] { 0x07 });
+                keycode["è"] = new Code(new[] { false, true }, new[] { 0x08 });
+                keycode["_"] = new Code(new[] { false, true }, new[] { 0x09 });
+                keycode["ç"] = new Code(new[] { false, true }, new[] { 0x0a });
+                keycode["à"] = new Code(new[] { false, true }, new[] { 0x0b });
+                keycode[")"] = new Code(new[] { false, true }, new[] { 0x0c });
+                keycode["="] = new Code(new[] { false, true }, new[] { 0x0d });
 
-            keycode["Win+R+down"] = new Code(new[] { false, false }, new[] { 0x15b, 0x13 });
-            keycode["Win+R+up"] = new Code(new[] { true, true }, new[] { 0x15b, 0x13 });
-            keycode["Win+D"] = new Code(new[] { false, false, true, true }, new[] { 0x15b, 0x20 });
-            keycode["Alt+Shift"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x2a });
-            keycode["Alt+Space"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x39 });
-            keycode["Ctrl+Shift"] = new Code(new[] { false, false, true, true }, new[] { 0x1d, 0x2a });
-            keycode["Alt+F4"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x3e });
-            keycode["Ctrl+V"] = new Code(new[] { false, false, true, true }, new[] { 0x1d, 0x2f });
+                // 1234567890°+
+                keycode["1"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x02 });
+                keycode["2"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x03 });
+                keycode["3"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x04 });
+                keycode["4"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x05 });
+                keycode["5"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x06 });
+                keycode["6"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x07 });
+                keycode["7"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x08 });
+                keycode["8"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x09 });
+                keycode["9"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0a });
+                keycode["0"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0b });
+                keycode["°"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0c });
+                keycode["+"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0d });
+
+                // AZERTYUIOP£
+                keycode["A"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x10 });
+                keycode["Z"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x11 });
+                keycode["E"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x12 });
+                keycode["R"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x13 });
+                keycode["T"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x14 });
+                keycode["Y"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x15 });
+                keycode["U"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x16 });
+                keycode["I"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x17 });
+                keycode["O"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x18 });
+                keycode["P"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x19 });
+                keycode["£"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x1b });
+
+                // QSDFGHJKLM%µ
+                keycode["Q"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x1e });
+                keycode["S"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x1f });
+                keycode["D"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x20 });
+                keycode["F"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x21 });
+                keycode["G"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x22 });
+                keycode["H"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x23 });
+                keycode["J"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x24 });
+                keycode["K"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x25 });
+                keycode["L"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x26 });
+                keycode["M"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x27 });
+                keycode["%"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x28 });
+                keycode["µ"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2b });
+
+                // >WXCVBN?./§
+
+                keycode[">"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x56 });
+                keycode["W"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2c });
+                keycode["X"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2d });
+                keycode["C"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2e });
+                keycode["V"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2f });
+                keycode["B"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x30 });
+                keycode["N"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x31 });
+                keycode["?"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x32 });
+                keycode["."] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x33 });
+                keycode["/"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x34 });
+                keycode["§"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x35 });
+
+                // ~#{[|`\^@]}
+
+                keycode["~"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x03 });
+                keycode["#"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x04 });
+                keycode["{"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x05 });
+                keycode["["] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x06 });
+                keycode["|"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x07 });
+                keycode["`"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x08 });
+                keycode["\\"] = new Code(new[] { false, false, false, true, true, true }, new[] { 0x1d, 0x38, 0x09 });
+                // keycode["\\"] = new Code(new[] { false, false, true, true }, new[] { 0xe038, 0x09 });
+                keycode["^"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x0a });
+                keycode["@"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x0b });
+                keycode["]"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x0c });
+                keycode["}"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x0d });
+
+
+                keycode["Win+R+down"] = new Code(new[] { false, false }, new[] { 0x15b, 0x13 });
+                keycode["Win+R+up"] = new Code(new[] { true, true }, new[] { 0x15b, 0x13 });
+                keycode["Win+D"] = new Code(new[] { false, false, true, true }, new[] { 0x15b, 0x20 });
+                keycode["Alt+Shift"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x2a });
+                keycode["Alt+Space"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x39 });
+                keycode["Ctrl+Shift"] = new Code(new[] { false, false, true, true }, new[] { 0x1d, 0x2a });
+                keycode["Alt+F4"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x3e });
+                keycode["Ctrl+V"] = new Code(new[] { false, false, true, true }, new[] { 0x1d, 0x2f });
+            }
+            // default to "en"
+            else
+            {
+                keycode["Esc"] = new Code(new[] { false, true }, new[] { 0x01 });
+                keycode["Enter+down"] = new Code(new[] { false }, new[] { 0x1c });
+                keycode["Enter+up"] = new Code(new[] { true }, new[] { 0x1c });
+                keycode["Win"] = new Code(new[] { false, true }, new[] { 0x15b });
+                keycode["Down"] = new Code(new[] { false, true }, new[] { 0x150 });
+                keycode["Right"] = new Code(new[] { false, true }, new[] { 0x14d });
+                keycode["Left"] = new Code(new[] { false, true }, new[] { 0x14b });
+
+                keycode["Calc"] = new Code(new[] { false, true }, new[] { 0x121, 0x121 });
+                keycode["Paste"] = new Code(new[] { false, true }, new[] { 0x10a, 0x10a });
+
+                keycode["1"] = new Code(new[] { false, true }, new[] { 0x02 });
+                keycode["2"] = new Code(new[] { false, true }, new[] { 0x03 });
+                keycode["3"] = new Code(new[] { false, true }, new[] { 0x04 });
+                keycode["4"] = new Code(new[] { false, true }, new[] { 0x05 });
+                keycode["5"] = new Code(new[] { false, true }, new[] { 0x06 });
+                keycode["6"] = new Code(new[] { false, true }, new[] { 0x07 });
+                keycode["7"] = new Code(new[] { false, true }, new[] { 0x08 });
+                keycode["8"] = new Code(new[] { false, true }, new[] { 0x09 });
+                keycode["9"] = new Code(new[] { false, true }, new[] { 0x0a });
+                keycode["0"] = new Code(new[] { false, true }, new[] { 0x0b });
+                keycode["-"] = new Code(new[] { false, true }, new[] { 0x0c });
+
+                keycode["a"] = new Code(new[] { false, true }, new[] { 0x1e });
+                keycode["b"] = new Code(new[] { false, true }, new[] { 0x30 });
+                keycode["c"] = new Code(new[] { false, true }, new[] { 0x2e });
+                keycode["d"] = new Code(new[] { false, true }, new[] { 0x20 });
+                keycode["e"] = new Code(new[] { false, true }, new[] { 0x12 });
+                keycode["f"] = new Code(new[] { false, true }, new[] { 0x21 });
+                keycode["g"] = new Code(new[] { false, true }, new[] { 0x22 });
+                keycode["h"] = new Code(new[] { false, true }, new[] { 0x23 });
+                keycode["i"] = new Code(new[] { false, true }, new[] { 0x17 });
+                keycode["j"] = new Code(new[] { false, true }, new[] { 0x24 });
+                keycode["k"] = new Code(new[] { false, true }, new[] { 0x25 });
+                keycode["l"] = new Code(new[] { false, true }, new[] { 0x26 });
+                keycode["m"] = new Code(new[] { false, true }, new[] { 0x32 });
+                keycode["n"] = new Code(new[] { false, true }, new[] { 0x31 });
+                keycode["o"] = new Code(new[] { false, true }, new[] { 0x18 });
+                keycode["p"] = new Code(new[] { false, true }, new[] { 0x19 });
+                keycode["q"] = new Code(new[] { false, true }, new[] { 0x10 });
+                keycode["r"] = new Code(new[] { false, true }, new[] { 0x13 });
+                keycode["s"] = new Code(new[] { false, true }, new[] { 0x1f });
+                keycode["t"] = new Code(new[] { false, true }, new[] { 0x14 });
+                keycode["u"] = new Code(new[] { false, true }, new[] { 0x16 });
+                keycode["v"] = new Code(new[] { false, true }, new[] { 0x2f });
+                keycode["w"] = new Code(new[] { false, true }, new[] { 0x11 });
+                keycode["x"] = new Code(new[] { false, true }, new[] { 0x2d });
+                keycode["y"] = new Code(new[] { false, true }, new[] { 0x15 });
+                keycode["z"] = new Code(new[] { false, true }, new[] { 0x2c });
+                keycode[" "] = new Code(new[] { false, true }, new[] { 0x39 });
+
+                keycode[","] = new Code(new[] { false, true }, new[] { 0x33 });
+                keycode["."] = new Code(new[] { false, true }, new[] { 0x34 });
+                keycode["/"] = new Code(new[] { false, true }, new[] { 0x35 });
+                keycode["["] = new Code(new[] { false, true }, new[] { 0x1a });
+                keycode["]"] = new Code(new[] { false, true }, new[] { 0x1b });
+                keycode["\\"] = new Code(new[] { false, true }, new[] { 0x2b });
+                keycode[";"] = new Code(new[] { false, true }, new[] { 0x27 });
+                keycode["'"] = new Code(new[] { false, true }, new[] { 0x28 });
+
+                keycode["\""] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x28 });
+                keycode[":"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x27 });
+                keycode["|"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x2b });
+                keycode["&"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x08 });
+                keycode["%"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x06 });
+                keycode["("] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0a });
+                keycode[")"] = new Code(new[] { false, false, true, true }, new[] { 0x2a, 0x0b });
+
+                keycode["Win+R+down"] = new Code(new[] { false, false }, new[] { 0x15b, 0x13 });
+                keycode["Win+R+up"] = new Code(new[] { true, true }, new[] { 0x15b, 0x13 });
+                keycode["Win+D"] = new Code(new[] { false, false, true, true }, new[] { 0x15b, 0x20 });
+                keycode["Alt+Shift"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x2a });
+                keycode["Alt+Space"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x39 });
+                keycode["Ctrl+Shift"] = new Code(new[] { false, false, true, true }, new[] { 0x1d, 0x2a });
+                keycode["Alt+F4"] = new Code(new[] { false, false, true, true }, new[] { 0x38, 0x3e });
+                keycode["Ctrl+V"] = new Code(new[] { false, false, true, true }, new[] { 0x1d, 0x2f });
+            }
         }
     }
 }

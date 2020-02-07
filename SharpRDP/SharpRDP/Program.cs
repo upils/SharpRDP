@@ -18,6 +18,8 @@ namespace SharpRDP
             Console.WriteLine("    SharpRDP.exe computername=192.168.1.1 command=\"C:\\Temp\\file.exe\" username=domain\\user password=password exec=cmd");
             Console.WriteLine("  Use restricted admin mode");
             Console.WriteLine("    SharpRDP.exe computername=192.168.1.1 command=\"C:\\Temp\\file.exe\"");
+            Console.WriteLine("  RDP Connection on a french target");
+            Console.WriteLine("    SharpRDP.exe computername=192.168.1.1 command=\"C:\\Temp\\file.exe\" username=domain\\user password=password lang=fr");
         }
         static void Main(string[] args)
         {
@@ -48,6 +50,7 @@ namespace SharpRDP
             string password = string.Empty;
             string command = string.Empty;
             string execw = "";
+            string language = "en";
 
             if (arguments.ContainsKey("username"))
             {
@@ -78,6 +81,10 @@ namespace SharpRDP
                 Console.WriteLine("[X] Error: A username is required");
                 return;
             }
+            if (arguments.ContainsKey("lang"))
+            {
+                language = arguments["lang"];
+            }
             if ((arguments.ContainsKey("computername")) && (arguments.ContainsKey("command")))
             {
                 Client rdpconn = new Client();
@@ -96,7 +103,7 @@ namespace SharpRDP
                 string[] computerNames = arguments["computername"].Split(',');
                 foreach (string server in computerNames)
                 {
-                    rdpconn.CreateRdpConnection(server, username, domain, password, command, execw);
+                    rdpconn.CreateRdpConnection(server, username, domain, password, command, execw, language);
                 }
             }
             else
